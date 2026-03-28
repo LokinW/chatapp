@@ -36,13 +36,7 @@ fun AppNavGraph(chats: List<Chat>) {
             val chatId = backStackEntry.arguments?.getInt("chatId") ?: -1
             ChatScreen(
                 title = "The chat",
-                onBackClick = { navController.popBackStack() }
-            )
-        }
-
-        composable("chat/new") {
-            ChatScreen(
-                title = "New Chat",
+                chatId = chatId,
                 onBackClick = { navController.popBackStack() }
             )
         }
