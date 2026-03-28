@@ -32,13 +32,31 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    chatId: Int) {
+    title: String,
+    chatId: Int,
+    onBackClick: () -> Unit) {
 
     var inputText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<String>() }
 
-    Scaffold(topBar = { CenterAlignedTopAppBar(title = { Text("Chat $chatId") }) }) { padding ->
+    Scaffold(topBar = {
+
+        TopAppBar(
+            title = {Text(title)},
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        )
+
+        CenterAlignedTopAppBar(title = { Text("Chat $chatId") }) }) { padding ->
+
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
+
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)

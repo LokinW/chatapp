@@ -113,7 +113,7 @@ fun HomeScreen(
                     items(chats) { chat ->
                         ChatListItem(
                             title = chat.name,
-                            onClick = { onChatClick(chat.id) }
+                            onClick = { onChatClick(chat.chatId) }
                         )
                     }
                 }
