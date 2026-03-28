@@ -28,56 +28,68 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.myfirstapplication.model.Chat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     title: String,
     chatId: Int,
-    onBackClick: () -> Unit) {
-
+    onBackClick: () -> Unit
+) {
     var inputText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<String>() }
 
-    Scaffold(topBar = {
-
-        TopAppBar(
-            title = {Text(title)},
-            navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(title) },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
                 }
-            }
-        )
-
-        CenterAlignedTopAppBar(title = { Text("Chat $chatId") }) }) { padding ->
-
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(messages) { msg -> Text(msg) }
+                items(messages) { msg ->
+                    Text(msg)
+                }
             }
 
-            Row(modifier = Modifier.fillMaxWidth().padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 androidx.compose.material3.TextField(
                     value = inputText,
                     onValueChange = { inputText = it },
                     modifier = Modifier.weight(1f),
                     placeholder = { Text("Type a message") }
                 )
-                androidx.compose.material3.Button(onClick = {
-                    if (inputText.isNotBlank()) {
-                        messages.add("You: $inputText")
-                        // Hier später LLM Antwort einfügen
-                        inputText = ""
+
+                androidx.compose.material3.Button(
+                    onClick = {
+                        if (inputText.isNotBlank()) {
+                            messages.add("You: $inputText")
+                            inputText = ""
+                        }
                     }
-                }) {
+                ) {
                     Text("Send")
                 }
             }
