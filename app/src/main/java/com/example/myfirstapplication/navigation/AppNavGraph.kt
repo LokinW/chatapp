@@ -3,6 +3,7 @@ package com.example.myfirstapplication.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,8 +14,12 @@ import com.example.myfirstapplication.ui.screens.ChatScreen
 import com.example.myfirstapplication.ui.screens.HomeScreen
 
 @Composable
-fun AppNavGraph(chats: MutableList<Chat>) {
+fun AppNavGraph(initialChats: List<Chat>) {
     val navController = rememberNavController()
+
+    val chats = remember {
+        initialChats.toMutableStateList()
+    }
 
     val nextChatId = remember {
         mutableIntStateOf((chats.maxOfOrNull { it.chatId } ?: 0) + 1)
@@ -38,6 +43,9 @@ fun AppNavGraph(chats: MutableList<Chat>) {
                     chats.add(0, newChat)
                     navController.navigate("chat/${newChat.chatId}")
                     nextChatId.intValue += 1
+                },
+                onDeleteChat = { chatId ->
+                    chats.removeAll { it.chatId == chatId }
                 }
             )
         }
@@ -50,8 +58,7 @@ fun AppNavGraph(chats: MutableList<Chat>) {
         ) { backStackEntry ->
 
             val chatId = backStackEntry.arguments?.getInt("chatId") ?: -1
-
-            val chat = chats.find { it.chatId == chatId}
+            val chat = chats.find { it.chatId == chatId }
 
             ChatScreen(
                 title = chat?.name ?: "Chat",
