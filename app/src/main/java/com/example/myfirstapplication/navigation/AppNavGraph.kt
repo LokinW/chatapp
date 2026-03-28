@@ -1,6 +1,8 @@
 package com.example.myfirstapplication.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,8 +13,12 @@ import com.example.myfirstapplication.ui.screens.ChatScreen
 import com.example.myfirstapplication.ui.screens.HomeScreen
 
 @Composable
-fun AppNavGraph(chats: List<Chat>) {
+fun AppNavGraph(chats: MutableList<Chat>) {
     val navController = rememberNavController()
+
+    val nextChatId = remember {
+        mutableIntStateOf((chats.maxOfOrNull { it.chatId } ?: 0) + 1)
+    }
 
     NavHost(
         navController = navController,
@@ -23,6 +29,15 @@ fun AppNavGraph(chats: List<Chat>) {
                 chats = chats,
                 onChatClick = { chatId ->
                     navController.navigate("chat/$chatId")
+                },
+                onNewChatSelected = { modelName ->
+                    val newChat = Chat(
+                        chatId = nextChatId.intValue,
+                        name = modelName
+                    )
+                    chats.add(0, newChat)
+                    navController.navigate("chat/${newChat.chatId}")
+                    nextChatId.intValue += 1
                 }
             )
         }
@@ -33,9 +48,13 @@ fun AppNavGraph(chats: List<Chat>) {
                 navArgument("chatId") { type = NavType.IntType }
             )
         ) { backStackEntry ->
+
             val chatId = backStackEntry.arguments?.getInt("chatId") ?: -1
+
+            val chat = chats.find { it.chatId == chatId}
+
             ChatScreen(
-                title = "The chat",
+                title = chat?.name ?: "Chat",
                 chatId = chatId,
                 onBackClick = { navController.popBackStack() }
             )
