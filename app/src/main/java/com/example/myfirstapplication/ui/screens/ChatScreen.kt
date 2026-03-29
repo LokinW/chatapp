@@ -11,6 +11,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -19,6 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +30,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.myfirstapplication.llm.ChatViewModel
 import com.example.myfirstapplication.model.Chat
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -35,10 +39,11 @@ import com.example.myfirstapplication.model.Chat
 fun ChatScreen(
     title: String,
     chatId: Int,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: ChatViewModel = viewModel()) {
 ) {
     var inputText by remember { mutableStateOf("") }
-    val messages = remember { mutableStateListOf<String>() }
+    //val messages = remember { mutableStateListOf<String>() }
 
     Scaffold(
         topBar = {
@@ -64,30 +69,24 @@ fun ChatScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(messages) { msg ->
-                    Text(msg)
-                }
+                items(viewModel.messages) { msg -> Text(msg) }
             }
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
+                modifier = Modifier.fillMaxWidth().padding(8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                androidx.compose.material3.TextField(
+                TextField(
                     value = inputText,
                     onValueChange = { inputText = it },
                     modifier = Modifier.weight(1f),
                     placeholder = { Text("Type a message") }
                 )
-
-                androidx.compose.material3.Button(
-                    onClick = {
-                        if (inputText.isNotBlank()) {
-                            messages.add("You: $inputText")
-                            inputText = ""
-                        }
+                Button(onClick = {
+                    if (inputText.isNotBlank()) {
+                        // Nachricht an ViewModel schicken, das DummyLLM benutzt
+                        viewModel.sendMessage(inputText)
+                        inputText = ""
                     }
                 ) {
                     Text("Send")
