@@ -5,3 +5,8 @@ data class Chat(
     val name: String
 )
 
+data class ChatMessage(
+    val text: String,
+    val isUser: Boolean
+)
+
