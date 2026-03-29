@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myfirstapplication.llm.ChatViewModel
+import com.example.myfirstapplication.model.Chat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -40,18 +41,18 @@ fun ChatScreen(
     chatId: Int,
     onBackClick: () -> Unit,
     viewModel: ChatViewModel = viewModel()) {
-
+) {
     var inputText by remember { mutableStateOf("") }
     //val messages = remember { mutableStateListOf<String>() }
 
     Scaffold(
         topBar = {
-            TopAppBar(
+            CenterAlignedTopAppBar(
                 title = { Text(title) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -59,10 +60,11 @@ fun ChatScreen(
             )
         }
     ) { padding ->
-
-        Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-
-            // Messages kommen jetzt aus dem ViewModel
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
             LazyColumn(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -86,7 +88,7 @@ fun ChatScreen(
                         viewModel.sendMessage(inputText)
                         inputText = ""
                     }
-                }) {
+                ) {
                     Text("Send")
                 }
             }

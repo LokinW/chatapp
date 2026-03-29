@@ -24,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -47,6 +48,7 @@ import com.example.myfirstapplication.model.Chat
 fun HomeScreen(
     chats: List<Chat>,
     onChatClick: (Int) -> Unit,
+    onNewChatSelected: (String) -> Unit
 ) {
     var showModelSheet by remember { mutableStateOf(false) }
     val sheetState = rememberModalBottomSheetState()
@@ -123,7 +125,11 @@ fun HomeScreen(
         if (showModelSheet) {
             ModelActionSheet(
                 sheetState = sheetState,
-                onDismiss = { showModelSheet = false }
+                onDismiss = { showModelSheet = false },
+                onModelSelected = { modelName ->
+                    showModelSheet = false
+                    onNewChatSelected(modelName)
+                }
             )
         }
     }
@@ -197,12 +203,12 @@ private fun NewChatListItem(
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ModelActionSheet(
     sheetState: androidx.compose.material3.SheetState,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    onModelSelected: (String) -> Unit
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -224,7 +230,7 @@ private fun ModelActionSheet(
             ModelSheetItem(
                 title = "Llama 3.1",
                 subtitle = "Balanced general assistant",
-                onClick = onDismiss
+                onClick = { onModelSelected("Llama 3.1") }
             )
 
             HorizontalDivider(
@@ -235,7 +241,7 @@ private fun ModelActionSheet(
             ModelSheetItem(
                 title = "Mistral",
                 subtitle = "Fast and lightweight",
-                onClick = onDismiss
+                onClick = { onModelSelected("Mistral") }
             )
 
             HorizontalDivider(
@@ -246,7 +252,7 @@ private fun ModelActionSheet(
             ModelSheetItem(
                 title = "Gemma 2",
                 subtitle = "Strong instruction following",
-                onClick = onDismiss
+                onClick = { onModelSelected("Gemma 2") }
             )
 
             HorizontalDivider(
@@ -257,7 +263,7 @@ private fun ModelActionSheet(
             ModelSheetItem(
                 title = "Phi-3",
                 subtitle = "Compact and efficient",
-                onClick = onDismiss
+                onClick = { onModelSelected("Phi-3") }
             )
         }
     }
