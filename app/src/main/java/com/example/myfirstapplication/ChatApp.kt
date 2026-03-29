@@ -14,5 +14,5 @@ fun ChatApp(
     val chats = remember {
         mutableStateListOf<Chat>()
     }
-    AppNavGraph(chats = chats)
+    AppNavGraph(initialChats = chats)
 }
