@@ -31,20 +31,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myfirstapplication.llm.ChatViewModel
+import com.example.myfirstapplication.viewmodel.ChatViewModel
 import com.example.myfirstapplication.model.Chat
+import com.example.myfirstapplication.model.LlmModel
+import com.example.myfirstapplication.viewmodel.ChatViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
     title: String,
     chatId: Int,
+    selectedModel: LlmModel,
     onBackClick: () -> Unit,
-    viewModel: ChatViewModel = viewModel()) {
-) {
+    ) {
     var inputText by remember { mutableStateOf("") }
-    //val messages = remember { mutableStateListOf<String>() }
 
+    val viewModel: ChatViewModel = viewModel(
+        factory = ChatViewModelFactory(selectedModel)
+    )
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -69,7 +73,9 @@ fun ChatScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(viewModel.messages) { msg -> Text(msg) }
+                items(viewModel.messages) { msg ->
+                    Text(msg)
+                }
             }
 
             Row(
@@ -84,11 +90,10 @@ fun ChatScreen(
                 )
                 Button(onClick = {
                     if (inputText.isNotBlank()) {
-                        // Nachricht an ViewModel schicken, das DummyLLM benutzt
                         viewModel.sendMessage(inputText)
                         inputText = ""
                     }
-                ) {
+                }) {
                     Text("Send")
                 }
             }

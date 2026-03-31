@@ -2,6 +2,7 @@ package com.example.myfirstapplication.model
 
 data class Chat(
     val chatId: Int,
-    val name: String
+    val name: String,
+    val model: LlmModel
 )
 

@@ -1,10 +1,6 @@
 package com.example.myfirstapplication.llm
 
-interface ChatModel {
-    fun generate(prompt: String, onResult: (String) -> Unit)
-}
-
-class DummyLLM : ChatModel {
+class DummyLLM(private val name: String = "Dummy") : ChatModel {
     override fun generate(prompt: String, onResult: (String) -> Unit) {
         onResult("Dummy-Antwort für: \"$prompt\"")
     }

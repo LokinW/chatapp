@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.myfirstapplication.model.Chat
+import com.example.myfirstapplication.model.LlmModel
 import com.example.myfirstapplication.ui.screens.ChatScreen
 import com.example.myfirstapplication.ui.screens.HomeScreen
 
@@ -38,7 +39,8 @@ fun AppNavGraph(initialChats: List<Chat>) {
                 onNewChatSelected = { modelName ->
                     val newChat = Chat(
                         chatId = nextChatId.intValue,
-                        name = modelName
+                        name = modelName,
+                        model = (LlmModel.MISTRAL) //VORSICHT HARDCODED PLZ FIX
                     )
                     chats.add(0, newChat)
                     navController.navigate("chat/${newChat.chatId}")
