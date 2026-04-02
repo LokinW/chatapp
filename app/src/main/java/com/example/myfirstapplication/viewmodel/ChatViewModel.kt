@@ -8,9 +8,7 @@ import com.example.myfirstapplication.llm.ChatService
 import com.example.myfirstapplication.llm.DummyLLM
 import com.example.myfirstapplication.model.LlmModel
 
-class ChatViewModel(selectedModel: LlmModel) : ViewModel() {
-
-    private val service = ChatService(selectedModel.createModel())
+class ChatViewModel(private val service: ChatService) : ViewModel() {
 
     val messages = mutableStateListOf<String>()
 
@@ -24,11 +22,14 @@ class ChatViewModel(selectedModel: LlmModel) : ViewModel() {
 }
 
 class ChatViewModelFactory(private val selectedModel: LlmModel) : ViewModelProvider.Factory {
+
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ChatViewModel::class.java)) {
-            // Erzeugt das ChatModel über SelectModel und initialisiert den ChatService
-            val service = ChatService(SelectModel.createModel(selectedModel))
+
+            val model = createModel(selectedModel)
+            val service = ChatService(model)
+
             return ChatViewModel(service) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +14,8 @@ import com.example.myfirstapplication.model.Chat
 import com.example.myfirstapplication.model.LlmModel
 import com.example.myfirstapplication.ui.screens.ChatScreen
 import com.example.myfirstapplication.ui.screens.HomeScreen
+import com.example.myfirstapplication.viewmodel.ChatViewModel
+import com.example.myfirstapplication.viewmodel.ChatViewModelFactory
 
 @Composable
 fun AppNavGraph(initialChats: List<Chat>) {
@@ -37,11 +40,15 @@ fun AppNavGraph(initialChats: List<Chat>) {
                     navController.navigate("chat/$chatId")
                 },
                 onNewChatSelected = { modelName ->
+
+                    val selectedModel = LlmModel.entries.find { it.title == modelName } ?: LlmModel.MISTRAL
+
                     val newChat = Chat(
                         chatId = nextChatId.intValue,
-                        name = modelName,
-                        model = (LlmModel.MISTRAL) //VORSICHT HARDCODED PLZ FIX
+                        name = selectedModel.title,
+                        model = selectedModel
                     )
+
                     chats.add(0, newChat)
                     navController.navigate("chat/${newChat.chatId}")
                     nextChatId.intValue += 1
@@ -54,17 +61,20 @@ fun AppNavGraph(initialChats: List<Chat>) {
 
         composable(
             route = "chat/{chatId}",
-            arguments = listOf(
-                navArgument("chatId") { type = NavType.IntType }
-            )
+            arguments = listOf(navArgument("chatId") { type = NavType.IntType })
         ) { backStackEntry ->
 
             val chatId = backStackEntry.arguments?.getInt("chatId") ?: -1
             val chat = chats.find { it.chatId == chatId }
 
+            val viewModel: ChatViewModel = viewModel(
+                factory = ChatViewModelFactory(chat?.model ?: LlmModel.MISTRAL)
+            )
+
             ChatScreen(
                 title = chat?.name ?: "Chat",
                 chatId = chatId,
+                viewModel = viewModel,
                 onBackClick = { navController.popBackStack() }
             )
         }

@@ -41,61 +41,35 @@ import com.example.myfirstapplication.viewmodel.ChatViewModelFactory
 fun ChatScreen(
     title: String,
     chatId: Int,
-    selectedModel: LlmModel,
-    onBackClick: () -> Unit,
-    ) {
-    var inputText by remember { mutableStateOf("") }
+    viewModel: ChatViewModel,
+    onBackClick: () -> Unit
+) {
+    val messages = viewModel.messages
 
-    val viewModel: ChatViewModel = viewModel(
-        factory = ChatViewModelFactory(selectedModel)
-    )
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text(title) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            LazyColumn(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(viewModel.messages) { msg ->
-                    Text(msg)
+    Column {
+        TopAppBar(
+            title = { Text(title) },
+            navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                 }
             }
+        )
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                TextField(
-                    value = inputText,
-                    onValueChange = { inputText = it },
-                    modifier = Modifier.weight(1f),
-                    placeholder = { Text("Type a message") }
-                )
-                Button(onClick = {
-                    if (inputText.isNotBlank()) {
-                        viewModel.sendMessage(inputText)
-                        inputText = ""
-                    }
-                }) {
-                    Text("Send")
-                }
+        LazyColumn {
+            items(messages) { msg ->
+                Text(msg)
+            }
+        }
+
+        var input by remember { mutableStateOf("") }
+        Row {
+            TextField(value = input, onValueChange = { input = it })
+            Button(onClick = {
+                viewModel.sendMessage(input)
+                input = ""
+            }) {
+                Text("Send")
             }
         }
     }
